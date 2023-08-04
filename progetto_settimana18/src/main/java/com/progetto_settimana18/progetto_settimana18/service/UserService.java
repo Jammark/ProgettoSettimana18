@@ -15,6 +15,9 @@ public class UserService {
 	@Autowired
 	private UserRepository repo;
 
+	@Autowired
+	private DispositivoService dSrv;
+
 	public User save(UserRequestPayload body) {
 		if (this.repo.existsByUsername(body.getUsername())) {
 			throw new IllegalArgumentException("Username già utilizzato: " + body.getUsername());
@@ -43,6 +46,7 @@ public class UserService {
 
 	public void rimuovi(Long id) {
 		User d = findById(id);
+		dSrv.liberaDispositivi(d);
 		this.repo.delete(d);
 	}
 

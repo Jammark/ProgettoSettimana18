@@ -31,7 +31,7 @@ public class DispositivoController {
 			@RequestParam(defaultValue = "0", required = false) int page,
 			@RequestParam(defaultValue = "10", required = false) int size,
 			@RequestParam(required = false) String tipologia, @RequestParam(required = false) String stato,
-			@RequestParam(required = false) String nome) {
+			@RequestParam(required = false) String nome, @RequestParam(required = false) Long userId) {
 
 		Page<Dispositivo> p;
 		if (tipologia != null) {
@@ -40,6 +40,8 @@ public class DispositivoController {
 			p = dSrv.searchByStato(stato, page, size);
 		} else if (nome != null) {
 			p = dSrv.searchByNome(nome, page, size);
+		} else if (userId != null) {
+			p = dSrv.searchByUser(userId, page, size);
 		} else {
 			p = dSrv.getDispositivi(page, size);
 		}

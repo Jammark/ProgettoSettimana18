@@ -1,5 +1,7 @@
 package com.progetto_settimana18.progetto_settimana18.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +20,9 @@ public interface DispositivoRepository extends JpaRepository<Dispositivo, Long> 
 	Page<Dispositivo> findByNome(String nome, Pageable p);
 
 	boolean existsByNome(String nome);
+
+	List<Dispositivo> findByUserId(Long id);
+
+	Page<Dispositivo> findByUserId(Long id, Pageable p);
 
 }

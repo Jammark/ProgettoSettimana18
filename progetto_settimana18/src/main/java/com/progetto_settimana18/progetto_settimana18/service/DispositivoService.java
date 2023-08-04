@@ -10,6 +10,7 @@ import com.progetto_settimana18.progetto_settimana18.model.Dispositivo;
 import com.progetto_settimana18.progetto_settimana18.model.StatoDispositivo;
 import com.progetto_settimana18.progetto_settimana18.model.User;
 import com.progetto_settimana18.progetto_settimana18.repository.DispositivoRepository;
+import com.progetto_settimana18.progetto_settimana18.repository.UserRepository;
 
 @Service
 public class DispositivoService {
@@ -18,7 +19,7 @@ public class DispositivoService {
 	private DispositivoRepository repo;
 
 	@Autowired
-	private UserService uSrv;
+	private UserRepository uRepo;
 
 	public Dispositivo save(DispositivoRequestPayload body) {
 		if (repo.existsByNome(body.getNome())) {
@@ -66,9 +67,13 @@ public class DispositivoService {
 		return repo.findByTipo(StatoDispositivo.valueOf(stato), PageRequest.of(page, size));
 	}
 
+	public Page<Dispositivo> searchByUser(Long userId, int page, int size) {
+		return repo.findByUserId(userId, PageRequest.of(page, size));
+	}
+
 	public Dispositivo assegna(Long dId, Long uID) {
 		Dispositivo d = findById(dId);
-		User u = uSrv.findById(uID);
+		User u = uRepo.findById(uID).orElseThrow(() -> new IllegalArgumentException("id utente non valido:" + uID));
 		d.setUser(u);
 		d.setTipo(StatoDispositivo.ASSEGNATO);
 		return this.repo.save(d);
@@ -79,5 +84,13 @@ public class DispositivoService {
 		d.setUser(null);
 		d.setTipo(StatoDispositivo.DISPONIBILE);
 		return this.repo.save(d);
+	}
+
+	public void liberaDispositivi(User u) {
+		if (u.getId() != null) {
+			this.repo.findByUserId(u.getId()).stream().map(Dispositivo::getId).forEach(this::libera);
+		} else {
+			throw new IllegalArgumentException("id utente non valido: " + u.getId());
+		}
 	}
 }
