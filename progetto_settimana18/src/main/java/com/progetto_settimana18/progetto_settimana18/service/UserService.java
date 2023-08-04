@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.progetto_settimana18.progetto_settimana18.controller.UserRegisterPayload;
 import com.progetto_settimana18.progetto_settimana18.controller.UserRequestPayload;
 import com.progetto_settimana18.progetto_settimana18.model.User;
 import com.progetto_settimana18.progetto_settimana18.repository.UserRepository;
@@ -24,6 +25,15 @@ public class UserService {
 		}
 		User u = new User(body.getUsername(), body.getNome(), body.getCognome(), body.getEmail());
 
+		return this.repo.save(u);
+	}
+
+	public User save(UserRegisterPayload body) {
+		if (this.repo.existsByUsername(body.getUsername())) {
+			throw new IllegalArgumentException("Username già utilizzato: " + body.getUsername());
+		}
+		User u = new User(body.getUsername(), body.getNome(), body.getCognome(), body.getEmail());
+		u.setPassword(body.getPassword());
 		return this.repo.save(u);
 	}
 
@@ -76,6 +86,11 @@ public class UserService {
 		} else {
 			throw new IllegalArgumentException("I parametri di ricerca non sono valorizzati.");
 		}
+	}
+
+	public User findByUsername(String username) {
+		return this.repo.findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("Username non trovato." + username));
 	}
 
 }

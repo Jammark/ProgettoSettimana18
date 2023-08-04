@@ -22,4 +22,10 @@ public class GestoreErrori {
 		return new ErrorPayload(e.getMessage(), LocalDate.now());
 	}
 
+	@ExceptionHandler(UnauthorizedException.class)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ErrorPayload handleUnauthorized(UnauthorizedException e) {
+		return new ErrorPayload(e.getMessage(), LocalDate.now());
+	}
+
 }
