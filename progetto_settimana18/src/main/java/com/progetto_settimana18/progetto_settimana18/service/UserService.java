@@ -16,6 +16,9 @@ public class UserService {
 	private UserRepository repo;
 
 	public User save(UserRequestPayload body) {
+		if (this.repo.existsByUsername(body.getUsername())) {
+			throw new IllegalArgumentException("Username già utilizzato: " + body.getUsername());
+		}
 		User u = new User(body.getUsername(), body.getNome(), body.getCognome(), body.getEmail());
 
 		return this.repo.save(u);
@@ -36,6 +39,39 @@ public class UserService {
 
 	public Page<User> getUsers(int page, int size) {
 		return repo.findAll(PageRequest.of(page, size));
+	}
+
+	public void rimuovi(Long id) {
+		User d = findById(id);
+		this.repo.delete(d);
+	}
+
+	public Page<User> search(String nome, String cognome, int page, int size) {
+		if (nome != null && cognome != null) {
+			return this.repo.findByNomeAndCognome(nome, cognome, PageRequest.of(page, size));
+		} else if (nome != null) {
+			return this.repo.findByNome(nome, PageRequest.of(page, size));
+		} else if (cognome != null) {
+			return this.repo.findByCognome(cognome, PageRequest.of(page, size));
+		} else {
+			throw new IllegalArgumentException("I parametri di ricerca non sono valorizzati.");
+		}
+	}
+
+	public Page<User> searchByUsername(String username, int page, int size) {
+		if (username != null) {
+			return this.repo.findByUsername(username, PageRequest.of(page, size));
+		} else {
+			throw new IllegalArgumentException("I parametri di ricerca non sono valorizzati.");
+		}
+	}
+
+	public Page<User> searchByEmail(String email, int page, int size) {
+		if (email != null) {
+			return this.repo.findByEmail(email, PageRequest.of(page, size));
+		} else {
+			throw new IllegalArgumentException("I parametri di ricerca non sono valorizzati.");
+		}
 	}
 
 }

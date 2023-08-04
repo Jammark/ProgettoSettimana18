@@ -24,8 +24,7 @@ public class SecurityConfig {
 		// Se vogliamo utilizzare JWT dobbiamo disabilitare anche le sessioni
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-		// http.authorizeHttpRequests(auth ->
-		// auth.requestMatchers("/users/**").authenticated());
+		http.authorizeHttpRequests(auth -> auth.requestMatchers("/dispositivi/**").permitAll());
 		http.authorizeHttpRequests(auth -> auth.requestMatchers("/dipendenti/**").permitAll());
 
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
